@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    {% include "partials/header.html" %}
+
+    <body>
+
+        {% include "partials/nav.html" %}
+
+        {% block content %}{% endblock %}
+
+        {% include "partials/footer.html" %}
+
+        <div class="modal" id="myModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <img class="card-img-top" src="http://placehold.it/700x400" alt=""/>
+                        <div class="modal-description mt-2">
+                            <p>Modal body text goes here.</p>
+                        </div>
+                        <div class="modal-details mt-2">
+                            <h4>Directions</h4>
+                            <p class="product-directions"></p>
+                            <h4>Disclaimer</h4>
+                            <p>
+                                <small class="product-disclaimer"></small>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        {# <a href="#" class="btn btn-primary">Buy Now</a> #}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bootstrap core JavaScript -->
+
+        <!-- Bootstrap core JavaScript -->
+        <script src="assets/vendor/jquery/jquery.min.js"></script>
+        <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Custom scripts for this template -->
+        <script src="assets/js/clean-blog.min.js"></script>
+
+        <script>
+
+            var items = [];
+            var products = [];
+            $.getJSON("/assets/data/data.json", function (data) {
+
+                // console.log(data);
+                $.each(data, function (key, val) {
+                    items.push(data)
+                });
+
+                console.log(items)
+                products = items[0].products;
+                console.log(products)
+            });
+
+            var infoModal = $("#myModal");
+            $(".openModal").on("click", function () {
+                console.log(this.value);
+                var product_id = parseInt(this.value) - 1
+                console.log(products[product_id])
+                // htmlData = $(this)
+                //   .find(".profile")
+                //   .html();
+                infoModal
+                    .find(".modal-title")
+                    .html(products[product_id].name);
+                infoModal
+                    .find(".modal-description")
+                    .html(products[product_id].ingredients);
+                infoModal
+                    .find(".product-directions")
+                    .html(products[product_id].directions);
+                infoModal
+                    .find(".product-disclaimer")
+                    .html(products[product_id].disclaimer);
+                infoModal.modal("show");
+                return false;
+            });
+        </script>
+    </body>
+</html>
