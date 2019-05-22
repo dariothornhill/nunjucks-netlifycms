@@ -6,6 +6,7 @@ var data = require("gulp-data");
 var path = require("path");
 var fs = require("fs");
 var netlify = require("gulp-netlify");
+var merge = require("gulp-merge-json");
 
 const imagemin = require("gulp-imagemin");
 
@@ -14,6 +15,42 @@ var manageEnvironment = function(env) {
     return str.split(seperator);
   });
 };
+
+const groupJson = {};
+groupJson.articles = [];
+
+gulp.task("combine_json", function(cb) {
+  gulp
+    .src("./posts/*.json")
+    .pipe(
+      merge({
+        fileName: "articles.json",
+        // startObj: [],
+        // concatArrays: true,
+        // mergeArrays: false,
+        // jsonSpace: "  ",
+        // jsonReplacer: (key, value) => {
+        //   const groupJson = {};
+
+        //   groupJson.articles = [];
+        //   // groupJson.articles = value;
+
+        //   console.log(key, value);
+        //   return groupJson;
+        // }
+        // exportModule: "const myVar"
+        edit: (parsedJson, file) => {
+          // console.log(parsedJson, file);
+
+          groupJson.articles.push(parsedJson);
+
+          return groupJson;
+        }
+      })
+    )
+    .pipe(gulp.dest("./assets/data"));
+  cb();
+});
 
 gulp.task("render_content", function(cb) {
   // Copy assets to dist folder
@@ -35,16 +72,16 @@ gulp.task("render_content", function(cb) {
     //     return require("data.json");
     //   })
     // )
-    // .pipe(
-    //   data(function(file) {
-    //     return JSON.parse(fs.readFileSync("./assets/data/data.json"));
-    //   })
-    // )
+    .pipe(
+      data(function(file) {
+        return JSON.parse(fs.readFileSync("./assets/data/sample.json"));
+      })
+    )
     .pipe(
       nunjucksRender({
         path: ["templates/"], // String or Array
         data: {
-          site_title: "Imoro Therapy"
+          site_title: "Nunjucks Test"
         },
         envOptions: {
           watch: false
@@ -64,15 +101,15 @@ gulp.task("render_images", function(cb) {
   cb();
 });
 
-gulp.task("deploy", function() {
-  gulp.src("./dist/**/*").pipe(
-    netlify({
-      site_id: "imoro-demosite",
-      access_token:
-        "5f4eca17ba6f9727e4e859df2dc6d8cd43745b7c15d5312e4d814d10db1bf6b1"
-    })
-  );
-});
+// gulp.task("deploy", function() {
+//   gulp.src("./dist/**/*").pipe(
+//     netlify({
+//       site_id: "imoro-demosite",
+//       access_token:
+//         "5f4eca17ba6f9727e4e859df2dc6d8cd43745b7c15d5312e4d814d10db1bf6b1"
+//     })
+//   );
+// });
 
 // BrowserSync
 function browserSync(done) {
@@ -102,4 +139,7 @@ function watchFiles() {
 gulp.task("default", gulp.parallel("render_content", "render_images"));
 
 // dev task
-gulp.task("dev", gulp.parallel("render_content", watchFiles, browserSync));
+gulp.task(
+  "dev",
+  gulp.parallel("combine_json", "render_content", watchFiles, browserSync)
+);
