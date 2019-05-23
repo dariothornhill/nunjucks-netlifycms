@@ -136,7 +136,10 @@ function watchFiles() {
   gulp.watch("./dist/*.html", browserSyncReload);
 }
 
-gulp.task("default", gulp.parallel("render_content", "render_images"));
+gulp.task(
+  "default",
+  gulp.parallel("combine_json", "render_content", "render_images")
+);
 
 // dev task
 gulp.task(
