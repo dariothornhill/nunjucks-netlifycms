@@ -54,8 +54,8 @@ gulp.task("combine_json", function(cb) {
 
 gulp.task("render_content", function(cb) {
   // Copy assets to dist folder
-  gulp.src(["./assets/**/*"]).pipe(gulp.dest("./dist/assets/"));
-  gulp.src(["pages/**/*.yml"]).pipe(gulp.dest("./dist/"));
+  gulp.src(["./assets/**/*"]).pipe(gulp.dest("./build/assets/"));
+  gulp.src(["pages/**/*.yml"]).pipe(gulp.dest("./build/"));
 
   //Render images
   // gulp
@@ -89,7 +89,7 @@ gulp.task("render_content", function(cb) {
         manageEnv: manageEnvironment
       })
     )
-    .pipe(gulp.dest("dist"));
+    .pipe(gulp.dest("build"));
   cb();
 });
 
@@ -97,7 +97,7 @@ gulp.task("render_images", function(cb) {
   gulp
     .src("./assets/images/**/*")
     .pipe(imagemin())
-    .pipe(gulp.dest("dist/assets/images"));
+    .pipe(gulp.dest("build/assets/images"));
   cb();
 });
 
@@ -115,7 +115,7 @@ gulp.task("render_images", function(cb) {
 function browserSync(done) {
   browsersync.init({
     server: {
-      baseDir: "./dist"
+      baseDir: "./build"
     }
   });
   done();
@@ -133,7 +133,7 @@ function watchFiles() {
   gulp.watch("./assets/**/*", gulp.series("render_content"));
   gulp.watch("./templates/**/*", gulp.series("render_content"));
   gulp.watch("./pages/**/*", gulp.series("render_content"));
-  gulp.watch("./dist/*.html", browserSyncReload);
+  gulp.watch("./build/*.html", browserSyncReload);
 }
 
 gulp.task(
