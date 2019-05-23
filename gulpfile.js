@@ -74,7 +74,7 @@ gulp.task("render_content", function(cb) {
     // )
     .pipe(
       data(function(file) {
-        return JSON.parse(fs.readFileSync("./assets/data/sample.json"));
+        return JSON.parse(fs.readFileSync("./assets/data/articles.json"));
       })
     )
     .pipe(
